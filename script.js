@@ -3,20 +3,22 @@ let touchStartX = 0;
 let touchEndX = 0;
 let lastScrollY = window.scrollY;
 
+// OpenWeather
+
 // navbar scrolling
-window.addEventListener("scroll", () => {
-  const navbar = document.getElementById("navbar");
+// window.addEventListener("scroll", () => {
+//   const navbar = document.getElementById("navbar");
 
-  if (lastScrollY < window.scrollY) {
-    // scrolling down
-    navbar.style.top = "-60px";
-  } else {
-    // scrolling up
-    navbar.style.top = "0";
-  }
+//   if (lastScrollY < window.scrollY) {
+//     // scrolling down
+//     navbar.style.top = "-60px";
+//   } else {
+//     // scrolling up
+//     navbar.style.top = "0";
+//   }
 
-  lastScrollY = window.scrollY;
-});
+//   lastScrollY = window.scrollY;
+// });
 
 // sidebar swiping
 function checkSwipeDirection() {
@@ -36,7 +38,7 @@ function checkSwipeDirection() {
 }
 
 function openSidebar() {
-  document.getElementById("sidebar").style.width = "20vw";
+  document.getElementById("sidebar").style.width = "50vw";
 }
 
 function closeSidebar() {
@@ -53,7 +55,7 @@ document.addEventListener("touchend", (e) => {
 });
 
 function toggleSidebar() {
-  if (sidebar.style.width === "20vw") {
+  if (sidebar.style.width === "50vw") {
     closeSidebar();
   } else {
     openSidebar();
