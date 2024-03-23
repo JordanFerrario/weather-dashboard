@@ -7,9 +7,11 @@ let lat;
 let lon;
 let citySearchInput;
 const units = "imperial";
-
 const citySearch = document.getElementById("city-search");
 const searchBtn = document.getElementById("search-btn");
+let temp;
+let wind;
+let humidity;
 
 // Get OpenWeather data
 function getFiveDayWeatherData(lat, lon) {
@@ -25,6 +27,7 @@ function getFiveDayWeatherData(lat, lon) {
     .then((data) => {
       if (data) {
         // render to UI
+        renderFiveDayWeather();
         console.log("5 day weather:", data);
       }
     });
@@ -41,9 +44,19 @@ function getCurrentWeatherData(lat, lon) {
       return response.json();
     })
     .then((data) => {
-      if (data) {
+      if (
+        data &&
+        data["main"].temp &&
+        data["wind"].speed &&
+        data["main"].humidity
+      ) {
+        temp = data["main"].temp;
+        wind = data["wind"].speed;
+        humidity = data["main"].humidity;
         // render to UI
-        console.log("current weather:", data);
+        renderCurrentWeather(temp, wind, humidity);
+      } else {
+        console.log("Temp, wind, and humidity data not found in response.");
       }
     });
 }
@@ -68,7 +81,7 @@ function getCoordinatesFromCitySearchInput() {
           lat = data[0].lat;
           lon = data[0].lon;
           getCurrentWeatherData(lat, lon);
-          getFiveDayWeatherData(lat, lon);
+          // getFiveDayWeatherData(lat, lon);
         } else {
           console.log("No city name found in the response");
         }
@@ -79,8 +92,21 @@ function getCoordinatesFromCitySearchInput() {
 }
 
 // render weather data to UI
+function renderCurrentWeather(temp, wind, humidity) {
+  const liTemp = document.getElementById("current-temp");
+  const liWind = document.getElementById("current-wind");
+  const liHumidity = document.getElementById("current-humidty");
+}
 
+function renderFiveDayWeather() {}
+
+// event listeners
 searchBtn.addEventListener("click", getCoordinatesFromCitySearchInput);
+citySearch.addEventListener("keypress", (event) => {
+  if (event.key === "Enter") {
+    getCoordinatesFromCitySearchInput();
+  }
+});
 
 // navbar scrolling
 // window.addEventListener("scroll", () => {
