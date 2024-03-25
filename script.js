@@ -3,15 +3,10 @@ let touchStartX = 0;
 let touchEndX = 0;
 let lastScrollY = window.scrollY;
 const weatherApiKey = "55e089ff3707c1a7d257809d2f463710";
-let lat;
-let lon;
 let citySearchInput;
 const units = "imperial";
 const citySearch = document.getElementById("city-search");
 const searchBtn = document.getElementById("search-btn");
-let temp;
-let wind;
-let humidity;
 
 // Get OpenWeather data
 function getFiveDayWeatherData(lat, lon) {
@@ -25,11 +20,38 @@ function getFiveDayWeatherData(lat, lon) {
       return response.json();
     })
     .then((data) => {
-      if (data) {
-        // render to UI
-        renderFiveDayWeather();
-        console.log("5 day weather:", data);
-      }
+      const forecasts = data.list;
+      const dailyForecasts = [];
+
+      forecasts.forEach((forecast) => {
+        const dateText = forecast.dt_txt;
+        const temp = forecast.main.temp;
+        const wind = forecast.wind.speed;
+        const humidity = forecast.main.humidity;
+
+        // parse the date to reformat it
+        const dateTime = new Date(dateText);
+        const formattedDate = `${(dateTime.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${dateTime
+          .getDate()
+          .toString()
+          .padStart(2, "0")}-${dateTime.getFullYear()}`;
+
+        // create an object with the forecast data
+        const forecastObj = {
+          dateTime: dateTime,
+          formattedDate: formattedDate,
+          temp: temp,
+          wind: wind,
+          humidity: humidity,
+        };
+
+        // add this forecast object to the array
+        dailyForecasts.push(forecastObj);
+      });
+
+      console.log(dailyForecasts);
     });
 }
 
@@ -44,19 +66,13 @@ function getCurrentWeatherData(lat, lon) {
       return response.json();
     })
     .then((data) => {
-      if (
-        data &&
-        data["main"].temp &&
-        data["wind"].speed &&
-        data["main"].humidity
-      ) {
+      if (data) {
         temp = data["main"].temp;
         wind = data["wind"].speed;
         humidity = data["main"].humidity;
+        city = data.name;
         // render to UI
-        renderCurrentWeather(temp, wind, humidity);
-      } else {
-        console.log("Temp, wind, and humidity data not found in response.");
+        renderCurrentWeather();
       }
     });
 }
@@ -80,8 +96,8 @@ function getCoordinatesFromCitySearchInput() {
         if (data && data[0].lat && data[0].lon) {
           lat = data[0].lat;
           lon = data[0].lon;
-          getCurrentWeatherData(lat, lon);
-          // getFiveDayWeatherData(lat, lon);
+          // getCurrentWeatherData(lat, lon);
+          getFiveDayWeatherData(lat, lon);
         } else {
           console.log("No city name found in the response");
         }
@@ -92,13 +108,24 @@ function getCoordinatesFromCitySearchInput() {
 }
 
 // render weather data to UI
-function renderCurrentWeather(temp, wind, humidity) {
-  const liTemp = document.getElementById("current-temp");
-  const liWind = document.getElementById("current-wind");
-  const liHumidity = document.getElementById("current-humidty");
+function renderCurrentWeather() {
+  let currentCityEl = document.getElementById("current-city");
+  let currentTempEl = document.getElementById("current-temp");
+  let currentWindEl = document.getElementById("current-wind");
+  let currentHumidityEl = document.getElementById("current-humidity");
+
+  currentCityEl.innerHTML = `${city}`;
+  currentTempEl.innerHTML = `Temperature: ${temp}°F`;
+  currentWindEl.innerHTML = `Wind Speed: ${wind} MPH`;
+  currentHumidityEl.innerHTML = `Humidity: ${humidity}%`;
 }
 
-function renderFiveDayWeather() {}
+function renderFiveDayWeather() {
+  let day1El = document.getElementById("day-1");
+  let tempDay1El = document.getElementById("temp-day-1");
+  let windDay1El = document.getElementById("wind-day-1");
+  let humidityDay1El = document.getElementById("humidity-day-1");
+}
 
 // event listeners
 searchBtn.addEventListener("click", getCoordinatesFromCitySearchInput);
